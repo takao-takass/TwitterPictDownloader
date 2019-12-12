@@ -81,7 +81,12 @@ namespace TwitterPictDownloader
             var tweetUrlList = new List<String>();
             foreach (var mail in mailList)
             {
+
                 // メール本文は長いことがあるため、改行文字でSplitする。
+                if (String.IsNullOrEmpty(mail.TextBody))
+                {
+                    continue;
+                }
                 var bodyLineList = mail.TextBody.Replace("\r", "\\▼")
                                                 .Replace("\n", "\\▼")
                                                 .Split("\\▼");
