@@ -17,6 +17,9 @@ namespace TwitterPictDownloader
     {
         static void Main(string[] args)
         {
+            // アプリバージョンを表示
+            Console.WriteLine("APP BUILD 2019-01-31 01");
+
             // メール受信済み情報を読み込み
             Console.WriteLine("前回のメール受信済み情報を読み込んでいます...");
 
@@ -255,7 +258,6 @@ namespace TwitterPictDownloader
 
             // 処理終了
             Console.WriteLine("end");
-            Console.ReadKey();
         }
     }
 }
