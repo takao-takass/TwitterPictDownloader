@@ -15,8 +15,13 @@ namespace TwitterPictDownloader.Models
         public DateTime DateTime { get; set; }
 
         /// <summary>
-        /// メール本文(テキスト)
+        /// メール本文
         /// </summary>
-        public string TextBody { get; set; }
+        public string Body { get; set; }
+
+        /// <summary>
+        /// メール本文種類(0:Text、1:Html)
+        /// </summary>
+        public int BodyType { get; set; }
     }
 }

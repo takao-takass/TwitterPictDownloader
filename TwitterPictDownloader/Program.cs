@@ -65,7 +65,8 @@ namespace TwitterPictDownloader
                     mailList.Add(new MailModel()
                     {
                         DateTime = mimeMessage.Date.DateTime,
-                        TextBody = mimeMessage.TextBody
+                        Body = String.IsNullOrEmpty(mimeMessage.TextBody) ? mimeMessage.HtmlBody : mimeMessage.HtmlBody,
+                        BodyType = String.IsNullOrEmpty(mimeMessage.TextBody) ? 1 : 0,
                     });
                 }
             }
@@ -83,13 +84,26 @@ namespace TwitterPictDownloader
             {
 
                 // メール本文は長いことがあるため、改行文字でSplitする。
-                if (String.IsNullOrEmpty(mail.TextBody))
+                if (String.IsNullOrEmpty(mail.Body))
                 {
                     continue;
                 }
-                var bodyLineList = mail.TextBody.Replace("\r", "\\▼")
-                                                .Replace("\n", "\\▼")
-                                                .Split("\\▼");
+
+                // 改行文字で改行して配列に格納する
+                string[] bodyLineList = { };
+                switch (mail.BodyType) {
+                    case 0:
+                        // TextBody
+                        bodyLineList = mail.Body.Replace("\r", "\\▼")
+                                .Replace("\n", "\\▼")
+                                .Split("\\▼");
+                        break;
+                    case 1:
+                        // HtmlBody
+                        bodyLineList = mail.Body.Replace("<br>", "\\▼")
+                                .Split("\\▼");
+                        break;
+                }
 
                 // 正規表現を用いてURLのパターンに一致する文字列を取得する
                 // 取得した文字列はツイートのURLである
@@ -222,9 +236,9 @@ namespace TwitterPictDownloader
             }
 
             // 受信したメールの最後の受信日時を、メール受信済み情報に書き込む
-            using (var outputFile = new StreamWriter(settingFilePath))
+            foreach (var mail in mailList)
             {
-                foreach(var mail in mailList)
+                using (var outputFile = new StreamWriter(settingFilePath))
                 {
                     var dateTimeString = String.Format("{0} {1} {2} {3} {4} {5} ",
                         mailList[0].DateTime.Year.ToString(),
@@ -235,8 +249,8 @@ namespace TwitterPictDownloader
                         mailList[0].DateTime.Second.ToString()
                     );
                     outputFile.WriteLine(dateTimeString);
-                    break;
                 }
+                break;
             }
 
             // 処理終了
